@@ -1,27 +1,31 @@
+'use strict';
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const port = 3000;
+
+const config = require('./config');
+const TsMonitor = require('./ts-monitor');
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', socket => {
-    console.log('a user connected');
+    console.log('A user connected');
 
-    /* General Idea
-        try {
-            tsMonitor.start(_ => {
-                io.emit('update', tsMonitor.getCurrent());
-            });
-        } catch (err) {
-
-        }
-    */
+    try {
+        const tsMonitor = new TsMonitor(config);
+        tsMonitor.start(_ => {
+            io.emit('update', tsMonitor.getCurrent());
+        });
+    } catch (err) {
+        console.error("Could not start TsMonitor:", err);
+    }
 
     socket.on('disconnect', _ => {
-        console.log('a user disconnected');
+        console.log('A user disconnected');
+        // TODO: disconnect TS-socket
     });
 });
 

@@ -1,3 +1,5 @@
+'use strict';
+
 class TsClient {
     constructor(clid, client_nickname, cid) {
         this.clid = clid;

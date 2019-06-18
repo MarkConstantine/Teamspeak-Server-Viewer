@@ -1,3 +1,5 @@
+'use strict';
+
 class TsChannel {
     constructor(cid, channel_name) {
         this.cid = cid;
