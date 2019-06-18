@@ -1,0 +1,18 @@
+{
+  "name": "ts3_monitor",
+  "version": "1.0.0",
+  "description": "Backend service to see who's logged into your TS server at any time.",
+  "main": "ts-monitor.js",
+  "dependencies": {
+    "eslint": "^5.16.0",
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0",
+    "teamspeak-query": "^3.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mark Constantine",
+  "license": "ISC"
+}
