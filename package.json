@@ -5,6 +5,7 @@
   "main": "ts-monitor.js",
   "dependencies": {
     "eslint": "^5.16.0",
+    "eventemitter2": "^5.0.1",
     "express": "^4.17.1",
     "socket.io": "^2.2.0",
     "teamspeak-query": "^3.1.0"

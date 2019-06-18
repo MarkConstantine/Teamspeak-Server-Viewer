@@ -1,10 +1,14 @@
 'use strict';
 const TeamspeakQuery = require('teamspeak-query');
+const EventEmitter = require('eventemitter2');
+
 const TsClient = require('./ts-client');
 const TsChannel = require('./ts-channel');
 
-class TsMonitor {
+class TsMonitor extends EventEmitter {
     constructor(config) {
+        super();
+
         this._config = config;
         this._query = new TeamspeakQuery.Raw({ 
             host: this._config.queryAddress,
@@ -13,21 +17,25 @@ class TsMonitor {
         this._query.keepalive.enable();
         this._query.keepalive.setDuration(240);
 
-        this._current = [];
+        this._channelAndClientsList = [];
     }
 
-    async start(callback) {
+    async start() {
         await this._setup();
-        await this._update(callback);
-        this._query.on('clientmoved', _ => this._update(callback));
-        this._query.on('clientleftview', _ => this._update(callback));
-        this._query.on('cliententerview', _ => this._update(callback));
-        this._query.on('channelcreated', _ => this._update(callback));
-        this._query.on('channelmoved', _ => this._update(callback));
+        await this._update();
+        this._query.on('clientmoved'    , _ => this._update());
+        this._query.on('clientleftview' , _ => this._update());
+        this._query.on('cliententerview', _ => this._update());
+        this._query.on('channelcreated' , _ => this._update());
+        this._query.on('channelmoved'   , _ => this._update());
     }
 
-    getCurrent() {
-        return this._current;
+    getChannelsAndClientsList() {
+        return this._channelAndClientsList;
+    }
+
+    async stop() {
+        await this._query.disconnect();
     }
 
     async _setup() {
@@ -41,16 +49,17 @@ class TsMonitor {
                 'event': 'channel',
                 'id': 0 
             });
-            console.log('Setup complete. Now listening...')
+            console.log('TsMonitor setup complete. Now listening...')
         } catch (err) {
             console.error('Could not setup:', err);
         }
     }
 
-    async _update(callback) {
+    async _update() {
         const channelList = await this._getCurrentChannels();
         const onlineClients = await this._getCurrentOnlineClients();
 
+        // Merge the clientlist into the channellist.
         for (let channel of channelList) {
             for (let client of onlineClients) {
                 if (client.cid == channel.cid) {
@@ -59,10 +68,8 @@ class TsMonitor {
             }
         }
 
-        this._current = channelList;
-
-        // Socket callback
-        callback();
+        this._channelAndClientsList = channelList;
+        this.emit('update', channelList);
     }
 
     async _getCurrentChannels() {
@@ -70,7 +77,7 @@ class TsMonitor {
     
         try {
             const res = await this._query.send('channellist');
-            const channelSpacerRegex = new RegExp("\.\*spacer\.\*");
+            const channelSpacerRegex = new RegExp('\.\*spacer\.\*');
             for (let i = 0; i < res.channel_order.length; i++) {
                 if (!this._config.allowChannelSpacers && channelSpacerRegex.test(res.channel_name[i])) {
                     continue;
@@ -90,7 +97,7 @@ class TsMonitor {
         
         try {
             const res = await this._query.send('clientlist');
-            const serverQueryAdminRegex = new RegExp("\.\*\(s\|S\)erver\.\*");
+            const serverQueryAdminRegex = new RegExp('\.\*\(s\|S\)erver\.\*');
             for (let i = 0; i < res.clid.length; i++) {
                 if (serverQueryAdminRegex.test(res.client_nickname[i])) {
                     continue;
