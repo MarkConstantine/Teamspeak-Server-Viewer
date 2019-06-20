@@ -3,17 +3,17 @@ const io = require('socket.io');
 const server = io.listen(3000);
 
 const config = require('../config');
-const TsMonitor = require('./ts-monitor');
+const TsViewer = require('./ts-viewer');
 
-const tsMonitor = new TsMonitor(config);
-tsMonitor.start();
+const tsViewer = new TsViewer(config);
+tsViewer.start();
 
 server.on('connection', socket => {
     console.log('A user connected');
 
-    socket.emit('update', tsMonitor.getCurrentServer());
+    socket.emit('update', tsViewer.getCurrentServer());
 
-    tsMonitor.on('update', currentServer => {
+    tsViewer.on('update', currentServer => {
         socket.emit('update', currentServer);
     });
 
@@ -24,6 +24,6 @@ server.on('connection', socket => {
 
 process.on('SIGINT', _ => {
     console.log('Closing application...');
-    tsMonitor.stop();
+    tsViewer.stop();
     process.exit();
 });

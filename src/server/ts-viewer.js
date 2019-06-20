@@ -6,7 +6,7 @@ const TsClient = require('./ts-client');
 const TsChannel = require('./ts-channel');
 const TsServer = require('./ts-server');
 
-class TsMonitor extends EventEmitter {
+class TsViewer extends EventEmitter {
     constructor(config) {
         super();
 
@@ -50,7 +50,7 @@ class TsMonitor extends EventEmitter {
                 'event': 'channel',
                 'id': 0
             });
-            console.log('TsMonitor setup complete. Now listening...')
+            console.log('TsViewer setup complete. Now listening...')
         } catch (err) {
             console.error('Could not setup:', err);
         }
@@ -129,4 +129,4 @@ class TsMonitor extends EventEmitter {
     }
 }
 
-module.exports = TsMonitor;
+module.exports = TsViewer;

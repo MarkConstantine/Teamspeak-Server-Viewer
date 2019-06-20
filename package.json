@@ -1,8 +1,8 @@
 {
-  "name": "ts3_monitor",
+  "name": "ts3-viewer",
   "version": "1.0.0",
   "description": "Backend service to see who's logged into your TS server at any time.",
-  "main": "ts-monitor.js",
+  "main": "ts-viewer.js",
   "dependencies": {
     "eventemitter2": "^5.0.1",
     "socket.io": "^2.2.0",
