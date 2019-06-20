@@ -1,20 +1,14 @@
 'use strict';
-const app = require('express')();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const port = 3000;
+const io = require('socket.io');
+const server = io.listen(3000);
 
-const config = require('./config');
+const config = require('../config');
 const TsMonitor = require('./ts-monitor');
 
 const tsMonitor = new TsMonitor(config);
 tsMonitor.start();
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
-io.on('connection', socket => {
+server.on('connection', socket => {
     console.log('A user connected');
 
     socket.emit('update', tsMonitor.getCurrentServer());
@@ -27,10 +21,6 @@ io.on('connection', socket => {
         console.log('A user disconnected');
     });
 });
-
-http.listen(port, _ => {
-    console.log(`Listening on ${config.queryAddress}:${port}`);
-})
 
 process.on('SIGINT', _ => {
     console.log('Closing application...');
