@@ -4,34 +4,35 @@ const EventEmitter = require('eventemitter2');
 
 const TsClient = require('./ts-client');
 const TsChannel = require('./ts-channel');
+const TsServer = require('./ts-server');
 
 class TsMonitor extends EventEmitter {
     constructor(config) {
         super();
 
         this._config = config;
-        this._query = new TeamspeakQuery.Raw({ 
+        this._query = new TeamspeakQuery.Raw({
             host: this._config.queryAddress,
             port: this._config.queryPort
         });
         this._query.keepalive.enable();
         this._query.keepalive.setDuration(240);
 
-        this._channelAndClientsList = [];
+        this._currentServer = null;
     }
 
     async start() {
         await this._setup();
         await this._update();
-        this._query.on('clientmoved'    , _ => this._update());
-        this._query.on('clientleftview' , _ => this._update());
+        this._query.on('clientmoved', _ => this._update());
+        this._query.on('clientleftview', _ => this._update());
         this._query.on('cliententerview', _ => this._update());
-        this._query.on('channelcreated' , _ => this._update());
-        this._query.on('channelmoved'   , _ => this._update());
+        this._query.on('channelcreated', _ => this._update());
+        this._query.on('channelmoved', _ => this._update());
     }
 
-    getChannelsAndClientsList() {
-        return this._channelAndClientsList;
+    getCurrentServer() {
+        return this._currentServer;
     }
 
     async stop() {
@@ -42,12 +43,12 @@ class TsMonitor extends EventEmitter {
         try {
             await this._query.send('login', this._config.queryUser, this._config.queryPass);
             await this._query.send('use', {
-                sid: this._config.querySID, 
+                sid: this._config.querySID,
                 port: this._config.queryVirtualServerPort
             });
             await this._query.send('servernotifyregister', {
                 'event': 'channel',
-                'id': 0 
+                'id': 0
             });
             console.log('TsMonitor setup complete. Now listening...')
         } catch (err) {
@@ -56,59 +57,74 @@ class TsMonitor extends EventEmitter {
     }
 
     async _update() {
-        const channelList = await this._getCurrentChannels();
-        const onlineClients = await this._getCurrentOnlineClients();
+        Promise.all([
+            this._query.send('serverlist'),
+            this._getCurrentChannels(),
+            this._getCurrentOnlineClients()
+        ]).then(values => {
+            this._currentServer = new TsServer(values[0].virtualserver_name, values[1], values[2]);    
+        })
 
-        // Merge the clientlist into the channellist.
-        for (let channel of channelList) {
-            for (let client of onlineClients) {
-                if (client.cid == channel.cid) {
-                    channel.addClient(client);
-                }
-            }
-        }
-
-        this._channelAndClientsList = channelList;
-        this.emit('update', channelList);
+        this.emit('update', this.getCurrentServer());
     }
 
     async _getCurrentChannels() {
         const currentChannels = [];
-    
+
         try {
             const res = await this._query.send('channellist');
             const channelSpacerRegex = new RegExp('\.\*spacer\.\*');
             for (let i = 0; i < res.channel_order.length; i++) {
-                if (!this._config.allowChannelSpacers && channelSpacerRegex.test(res.channel_name[i])) {
+                /*
+                    Skipping over channels with names that contain 'spacer'.
+                    This is mainly to avoid listing spacer channels that users
+                    cannot normally connect to. This option can be turned off 
+                    in the config.
+
+                    TODO: More specific regex
+                */
+                if (!this._config.allowChannelSpacers 
+                    && channelSpacerRegex.test(res.channel_name[i])) {
                     continue;
                 }
+
                 currentChannels.push(
                     new TsChannel(res.cid[i], res.channel_name[i]));
             }
         } catch (err) {
             console.error('Could not get channellist:', err);
         }
-    
+
         return currentChannels;
     }
 
     async _getCurrentOnlineClients() {
         const onlineClients = [];
-        
+
         try {
             const res = await this._query.send('clientlist');
             const serverQueryAdminRegex = new RegExp('\.\*\(s\|S\)erver\.\*');
+            
             for (let i = 0; i < res.clid.length; i++) {
-                if (serverQueryAdminRegex.test(res.client_nickname[i])) {
+                /*
+                    Skipping over users with names that contain 'Server'.
+                    This is mainly to avoid listing the server admin query
+                    as a user. This option can be turned off in the config.
+    
+                    TODO: More specific regex
+                */
+                if (!this._config.displayServerQueryUsers
+                    && serverQueryAdminRegex.test(res.client_nickname[i])) {
                     continue;
                 }
+
                 onlineClients.push(
                     new TsClient(res.clid[i], res.client_nickname[i], res.cid[i]));
             }
         } catch (err) {
             console.error('Could not get clientlist:', err);
         }
-    
+
         return onlineClients;
     }
 }

@@ -17,10 +17,10 @@ app.get('/', (req, res) => {
 io.on('connection', socket => {
     console.log('A user connected');
 
-    socket.emit('update', tsMonitor.getChannelsAndClientsList());
+    socket.emit('update', tsMonitor.getCurrentServer());
 
-    tsMonitor.on('update', channelsAndClientsList => {
-        socket.emit('update', channelsAndClientsList);
+    tsMonitor.on('update', currentServer => {
+        socket.emit('update', currentServer);
     });
 
     socket.on('disconnect', _ => {
@@ -35,6 +35,5 @@ http.listen(port, _ => {
 process.on('SIGINT', _ => {
     console.log('Closing application...');
     tsMonitor.stop();
-    console.log('Goodbye');
     process.exit();
 });
