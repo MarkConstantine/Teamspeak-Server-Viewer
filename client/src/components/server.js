@@ -1,6 +1,9 @@
 import React from "react";
 import io from "socket.io-client";
 import Channel from "./channel";
+import "bootstrap/dist/css/bootstrap.css";
+import "../styles/server.css";
+import { ReactComponent as ServerGreenIcon } from "../img/server_green.svg";
 
 export default class Server extends React.Component {
   constructor(props) {
@@ -25,9 +28,12 @@ export default class Server extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1>{this.state.serverName}</h1>
-        <ul>
+      <div className="ServerViewer">
+        <header className="ServerNameHeader">
+          <ServerGreenIcon width="16px" height="16px" />
+          {this.state.serverName}
+        </header>
+        <ul className="list-group">
           {this.state.channelList.map(channel => (
             <Channel
               key={channel.cid}
