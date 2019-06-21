@@ -2,7 +2,7 @@
 const io = require('socket.io');
 const server = io.listen(3000);
 
-const config = require('../config');
+const config = require('./config');
 const TsViewer = require('./ts-viewer');
 
 const tsViewer = new TsViewer(config);

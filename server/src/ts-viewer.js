@@ -28,6 +28,7 @@ class TsViewer extends EventEmitter {
         this._query.on('clientleftview', _ => this._update());
         this._query.on('cliententerview', _ => this._update());
         this._query.on('channelcreated', _ => this._update());
+        this._query.on('channeledited', _ => this._update());
         this._query.on('channelmoved', _ => this._update());
         this._query.on('serveredited', _ => this._update());
     }
