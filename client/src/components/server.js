@@ -17,8 +17,9 @@ export default class Server extends React.Component {
     };
 
     const socket = io("http://localhost:3000");
-    socket.on("update", msg => {
-      this.setState(msg);
+    socket.on("update", currentServer => {
+      this.setState(currentServer);
+      console.log(currentServer);
     });
   }
 

@@ -56,7 +56,9 @@ class TsViewer extends EventEmitter {
                 'event': 'server',
                 'id': 0
             })
-            console.log('TsViewer setup complete. Now listening...')
+            console.log(`TsViewer setup complete.` + 
+                `Now listening for incoming TS connections on` + 
+                `port ${this.config.queryVirtualServerPort}...`);
         } catch (err) {
             console.error('Could not setup:', err);
         }
@@ -108,7 +110,10 @@ class TsViewer extends EventEmitter {
 
         try {
             const res = await this._query.send('clientlist');
-            const serverQueryAdminRegex = new RegExp('\.\*\(s\|S\)erver\.\*');
+
+            // Removing 's' user (probably socket connection user).
+            // Only appears when no users logged in.
+            const serverQueryAdminRegex = new RegExp('\(\.\*\(s\|S\)erver\.\*\|s\)');
             
             for (let i = 0; i < res.clid.length; i++) {
                 /*
@@ -122,7 +127,6 @@ class TsViewer extends EventEmitter {
                     && serverQueryAdminRegex.test(res.client_nickname[i])) {
                     continue;
                 }
-
                 onlineClients.push(
                     new TsClient(res.clid[i], res.client_nickname[i], res.cid[i]));
             }
