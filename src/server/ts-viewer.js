@@ -29,6 +29,7 @@ class TsViewer extends EventEmitter {
         this._query.on('cliententerview', _ => this._update());
         this._query.on('channelcreated', _ => this._update());
         this._query.on('channelmoved', _ => this._update());
+        this._query.on('serveredited', _ => this._update());
     }
 
     getCurrentServer() {
@@ -50,6 +51,10 @@ class TsViewer extends EventEmitter {
                 'event': 'channel',
                 'id': 0
             });
+            await this._query.send('servernotifyregister', {
+                'event': 'server',
+                'id': 0
+            })
             console.log('TsViewer setup complete. Now listening...')
         } catch (err) {
             console.error('Could not setup:', err);
@@ -63,9 +68,8 @@ class TsViewer extends EventEmitter {
             this._getCurrentOnlineClients()
         ]).then(values => {
             this._currentServer = new TsServer(values[0].virtualserver_name, values[1], values[2]);    
-        })
-
-        this.emit('update', this.getCurrentServer());
+            this.emit('update', this.getCurrentServer());
+        });
     }
 
     async _getCurrentChannels() {

@@ -12,7 +12,6 @@ server.on('connection', socket => {
     console.log('A user connected');
 
     socket.emit('update', tsViewer.getCurrentServer());
-
     tsViewer.on('update', currentServer => {
         socket.emit('update', currentServer);
     });
