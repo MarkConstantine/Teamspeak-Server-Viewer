@@ -20,7 +20,9 @@ export default class Server extends React.Component {
     };
 
     const socket = io(
-      `${this.props.config.serverAddress}:${this.props.config.serverPort}`
+      `http://${this.props.config.serverAddress}:${
+        this.props.config.serverPort
+      }`
     );
     socket.on("update", currentServer => {
       this.setState(currentServer);
