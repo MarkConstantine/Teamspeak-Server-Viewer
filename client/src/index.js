@@ -1,6 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './styles/index.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./styles/index.css";
 import Server from "./components/server";
 
-ReactDOM.render(<Server />, document.getElementById('root'));
+import config from "./config";
+
+ReactDOM.render(<Server config={config} />, document.getElementById("root"));
