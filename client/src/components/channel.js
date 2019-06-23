@@ -1,24 +1,23 @@
 import React from "react";
 import Client from "./client";
-import { ReactComponent as ChannelGreenIcon } from "../img/channel_green_subscribed.svg";
+import { ReactComponent as ChannelIcon } from "../img/channel_green_subscribed.svg";
+import ListGroup from "react-bootstrap/ListGroup";
 
 export default class Channel extends React.Component {
   render() {
     return (
-      <div>
-        <li className="list-group-item list-group-item-dark">
-          <ChannelGreenIcon width="16px" height="16px" />
-          {this.props.channel_name}
-          <ul className="list-group">
-            {this.props.connected_clients.map(client => (
-              <Client
-                key={client.clid}
-                client_nickname={client.client_nickname}
-              />
-            ))}
-          </ul>
-        </li>
-      </div>
+      <ListGroup.Item className="py-1">
+        <ChannelIcon width="16px" height="16px" />
+        <span style={{ paddingLeft: "5px" }}>{this.props.channel_name}</span>
+        <ListGroup variant="flush">
+          {this.props.connected_clients.map(client => (
+            <Client
+              key={client.clid}
+              client_nickname={client.client_nickname}
+            />
+          ))}
+        </ListGroup>
+      </ListGroup.Item>
     );
   }
 }
