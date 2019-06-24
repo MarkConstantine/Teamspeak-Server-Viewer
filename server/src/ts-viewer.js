@@ -92,14 +92,6 @@ class TsViewer extends EventEmitter {
       const res = await this._query.send("channellist");
       const channelSpacerRegex = new RegExp(".*spacer.*");
       for (let i = 0; i < res.channel_order.length; i++) {
-        /*
-                    Skipping over channels with names that contain 'spacer'.
-                    This is mainly to avoid listing spacer channels that users
-                    cannot normally connect to. This option can be turned off 
-                    in the config.
-
-                    TODO: More specific regex
-                */
         if (
           !this._config.allowChannelSpacers &&
           channelSpacerRegex.test(res.channel_name[i])
@@ -121,19 +113,8 @@ class TsViewer extends EventEmitter {
 
     try {
       const res = await this._query.send("clientlist");
-
-      // Removing 's' user (probably socket connection user).
-      // Only appears when no users logged in.
-      const serverQueryAdminRegex = new RegExp("(.*(s|S)erver.*|s)");
-
+      const serverQueryAdminRegex = new RegExp(".*(s|S)erver.*");
       for (let i = 0; i < res.clid.length; i++) {
-        /*
-                    Skipping over users with names that contain 'Server'.
-                    This is mainly to avoid listing the server admin query
-                    as a user. This option can be turned off in the config.
-    
-                    TODO: More specific regex
-                */
         if (
           !this._config.displayServerQueryUsers &&
           serverQueryAdminRegex.test(res.client_nickname[i])
