@@ -24,9 +24,33 @@ class TsViewer extends EventEmitter {
   async start() {
     await this._setup();
     await this._update();
+    this._query.on("cliententerview", async clientinfo => {
+      // The updated server instance does not contain the client.
+      // Therefore, must query for it.
+      let client = await this._query.send("clientinfo", {clid: clientinfo.clid});
+      
+      // Restricting what we send over the wire mainly because
+      // most of the info the query obtains is not needed.
+      this.emit("cliententerview", {
+        clid: client.clid,
+        client_nickname: client.client_nickname,
+        time_connected: new Date(),
+      });
+      
+      this._update();
+    });
+    this._query.on("clientleftview", clientinfo => {
+      let client = this.getCurrentServer().getClient(clientinfo.clid);
+      
+      this.emit("clientleftview", {
+        clid: client.clid,
+        client_nickname: client.client_nickname,
+        time_disconnected: new Date(),
+      });
+      
+      this._update();
+    });
     this._query.on("clientmoved", _ => this._update());
-    this._query.on("clientleftview", _ => this._update());
-    this._query.on("cliententerview", _ => this._update());
     this._query.on("channelcreated", _ => this._update());
     this._query.on("channeledited", _ => this._update());
     this._query.on("channelmoved", _ => this._update());

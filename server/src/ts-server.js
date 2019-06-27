@@ -13,7 +13,18 @@ class TsServer {
             }
         }
 
+        this.clientList = clientList;
         this.channelList = channelList;
+    }
+
+    getClient(clid) {
+        for (let client of this.clientList) {
+            if (client.clid === clid) {
+                return client;
+            }
+        }
+
+        throw "Could not find client";
     }
 }
 

@@ -28,6 +28,12 @@ export default class Server extends React.Component {
       this.setState(currentServer);
       console.log(currentServer);
     });
+    socket.on("cliententerview", clientConnectionInfo => {
+      console.log(clientConnectionInfo);
+    });
+    socket.on("clientleftview", clientDisconnectionInfo => {
+      console.log(clientDisconnectionInfo);
+    });
   }
 
   render() {
