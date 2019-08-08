@@ -4,6 +4,7 @@ import Channel from "./channel";
 import "bootstrap/dist/css/bootstrap.css";
 import { ReactComponent as ServerGreenIcon } from "../img/server_green.svg";
 import { Card, Container, ListGroup } from "react-bootstrap";
+import Logger from "./logger";
 
 export default class Server extends React.Component {
   constructor(props) {
@@ -16,7 +17,8 @@ export default class Server extends React.Component {
           channel_name: "",
           connected_clients: []
         }
-      ]
+      ],
+      connections: []
     };
 
     const socket = io(
@@ -25,13 +27,18 @@ export default class Server extends React.Component {
       }`
     );
     socket.on("update", currentServer => {
-      this.setState(currentServer);
+      this.setState({serverName: currentServer.serverName});
+      this.setState({channelList: currentServer.channelList});
       console.log(currentServer);
     });
     socket.on("cliententerview", clientConnectionInfo => {
+      const joined = this.state.connections.concat(clientConnectionInfo);
+      this.setState({connections: joined});
       console.log(clientConnectionInfo);
     });
     socket.on("clientleftview", clientDisconnectionInfo => {
+      const joined = this.state.connections.concat(clientDisconnectionInfo);
+      this.setState({connections: joined});
       console.log(clientDisconnectionInfo);
     });
   }
@@ -58,6 +65,9 @@ export default class Server extends React.Component {
               />
             ))}
           </ListGroup>
+        </Card>
+        <Card style={{ width: "95%", margin: "auto" }}>
+          <Logger connections={this.state.connections}></Logger>
         </Card>
       </Container>
     );

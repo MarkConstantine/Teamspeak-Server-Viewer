@@ -24,7 +24,7 @@ class TsServer {
             }
         }
 
-        throw "Could not find client";
+        return null;
     }
 }
 
