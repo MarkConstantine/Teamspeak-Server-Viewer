@@ -174,7 +174,7 @@ class TsViewer extends EventEmitter {
 
     try {
       const res = await this._query.send("clientlist");
-      const serverQueryAdminRegex = new RegExp(".*(s|S)erver.*");
+      const serverQueryAdminRegex = new RegExp(".*serveradmin.*");
       for (let i = 0; i < res.clid.length; i++) {
         if (
           !this._config.displayServerQueryUsers &&
