@@ -9,7 +9,7 @@ class TsServer {
   }
 
   logConnection(connectionInfo, maxConnections) {
-    if (this.connectionHistory.length > maxConnections) {
+    if (this.connectionHistory.length >= maxConnections) {
       this.connectionHistory.shift();
     }
     this.connectionHistory.push(connectionInfo);

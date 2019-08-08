@@ -30,12 +30,10 @@ export default class Server extends React.Component {
       this.setState(currentServer);
     });
     socket.on("cliententerview", connectionHistory => {
-      this.setState({connectionHistory});
-      console.log(this.state);
+      this.setState({ connectionHistory });
     });
     socket.on("clientleftview", connectionHistory => {
-      this.setState({connectionHistory});
-      console.log(this.state);
+      this.setState({ connectionHistory });
     });
   }
 
@@ -63,7 +61,7 @@ export default class Server extends React.Component {
           </ListGroup>
         </Card>
         <Card style={{ width: "95%", margin: "auto" }}>
-          <Logger connectionHistory={this.state.connectionHistory}></Logger>
+          <Logger connectionHistory={this.state.connectionHistory} />
         </Card>
       </Container>
     );

@@ -87,12 +87,11 @@ class TsViewer extends EventEmitter {
 
       this._update();
     });
-
+    
     this._query.on("clientmoved", _ => this._update());
     this._query.on("channelcreated", _ => this._update());
     this._query.on("channeledited", _ => this._update());
     this._query.on("channelmoved", _ => this._update());
-    this._query.on("serveredited", _ => this._update());
   }
 
   async stop() {
@@ -106,18 +105,18 @@ class TsViewer extends EventEmitter {
         this._config.queryUser,
         this._config.queryPass
       );
+
       await this._query.send("use", {
         sid: this._config.querySID,
         port: this._config.queryVirtualServerPort
       });
+
+      // cliententerview, clientleftview, serveredited
       await this._query.send("servernotifyregister", {
         event: "channel",
         id: 0
       });
-      await this._query.send("servernotifyregister", {
-        event: "server",
-        id: 0
-      });
+
       console.log(
         `TsViewer setup complete. ` +
           `Now listening for incoming TS connections on ` +

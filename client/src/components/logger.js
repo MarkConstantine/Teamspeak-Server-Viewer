@@ -16,7 +16,7 @@ export default class Logger extends React.Component {
     const dateTimeStringFormatted = moment(dateTimeString).format(
       "MMM DD YYYY, h:mma"
     );
-    const msg = `${index} [${dateTimeStringFormatted}]: ${client_nickname} ${
+    const msg = `[${dateTimeStringFormatted}]: ${client_nickname} ${
       isConnecting ? "Connected" : "Disconnected"
     }`;
 
