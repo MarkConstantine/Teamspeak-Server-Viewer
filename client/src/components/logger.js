@@ -16,13 +16,13 @@ export default class Logger extends React.Component {
     const dateTimeStringFormatted = moment(dateTimeString).format(
       "MMM DD YYYY, h:mma"
     );
-    const msg = `[${dateTimeStringFormatted}]: ${client_nickname} ${
+    const message = `<${dateTimeStringFormatted}> ${client_nickname} ${
       isConnecting ? "Connected" : "Disconnected"
     }`;
 
     return (
       <div key={key} style={style}>
-        {msg}
+        {message}
       </div>
     );
   }
@@ -35,7 +35,7 @@ export default class Logger extends React.Component {
             height={300}
             width={width}
             rowCount={this.props.connectionHistory.length}
-            rowHeight={21}
+            rowHeight={22}
             rowRenderer={this.rowRenderer.bind(this)}
           />
         )}
