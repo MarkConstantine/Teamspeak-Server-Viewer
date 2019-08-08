@@ -7,6 +7,7 @@ const TsViewer = require("./ts-viewer");
 
 const tsViewer = new TsViewer(config);
 tsViewer.start();
+tsViewer.setMaxListeners(0);
 
 server.on("connection", socket => {
   socket.emit("update", tsViewer.currentServer);
