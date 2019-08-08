@@ -18,7 +18,7 @@ export default class Server extends React.Component {
           connected_clients: []
         }
       ],
-      connections: []
+      connectionHistory: []
     };
 
     const socket = io(
@@ -27,19 +27,15 @@ export default class Server extends React.Component {
       }`
     );
     socket.on("update", currentServer => {
-      this.setState({serverName: currentServer.serverName});
-      this.setState({channelList: currentServer.channelList});
-      console.log(currentServer);
+      this.setState(currentServer);
     });
-    socket.on("cliententerview", clientConnectionInfo => {
-      const joined = this.state.connections.concat(clientConnectionInfo);
-      this.setState({connections: joined});
-      console.log(clientConnectionInfo);
+    socket.on("cliententerview", connectionHistory => {
+      this.setState({connectionHistory});
+      console.log(this.state);
     });
-    socket.on("clientleftview", clientDisconnectionInfo => {
-      const joined = this.state.connections.concat(clientDisconnectionInfo);
-      this.setState({connections: joined});
-      console.log(clientDisconnectionInfo);
+    socket.on("clientleftview", connectionHistory => {
+      this.setState({connectionHistory});
+      console.log(this.state);
     });
   }
 
@@ -67,7 +63,7 @@ export default class Server extends React.Component {
           </ListGroup>
         </Card>
         <Card style={{ width: "95%", margin: "auto" }}>
-          <Logger connections={this.state.connections}></Logger>
+          <Logger connectionHistory={this.state.connectionHistory}></Logger>
         </Card>
       </Container>
     );

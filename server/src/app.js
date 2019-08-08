@@ -9,7 +9,7 @@ const tsViewer = new TsViewer(config);
 tsViewer.start();
 
 server.on("connection", socket => {
-  socket.emit("update", tsViewer.getCurrentServer());
+  socket.emit("update", tsViewer.currentServer);
   tsViewer.on("update", currentServer => {
     socket.emit("update", currentServer);
   });
