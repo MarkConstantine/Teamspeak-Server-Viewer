@@ -1,9 +1,9 @@
 import React from "react";
 import io from "socket.io-client";
-import Channel from "./channel";
 import "bootstrap/dist/css/bootstrap.css";
 import { ReactComponent as ServerGreenIcon } from "../img/server_green.svg";
 import { Card, Container, ListGroup } from "react-bootstrap";
+import Channel from "./channel";
 import Logger from "./logger";
 
 export default class Server extends React.Component {
@@ -18,7 +18,7 @@ export default class Server extends React.Component {
           connected_clients: []
         }
       ],
-      connections: []
+      connectionHistory: []
     };
 
     const socket = io(
@@ -27,19 +27,13 @@ export default class Server extends React.Component {
       }`
     );
     socket.on("update", currentServer => {
-      this.setState({serverName: currentServer.serverName});
-      this.setState({channelList: currentServer.channelList});
-      console.log(currentServer);
+      this.setState(currentServer);
     });
-    socket.on("cliententerview", clientConnectionInfo => {
-      const joined = this.state.connections.concat(clientConnectionInfo);
-      this.setState({connections: joined});
-      console.log(clientConnectionInfo);
+    socket.on("cliententerview", connectionHistory => {
+      this.setState({ connectionHistory });
     });
-    socket.on("clientleftview", clientDisconnectionInfo => {
-      const joined = this.state.connections.concat(clientDisconnectionInfo);
-      this.setState({connections: joined});
-      console.log(clientDisconnectionInfo);
+    socket.on("clientleftview", connectionHistory => {
+      this.setState({ connectionHistory });
     });
   }
 
@@ -66,9 +60,13 @@ export default class Server extends React.Component {
             ))}
           </ListGroup>
         </Card>
-        <Card style={{ width: "95%", margin: "auto" }}>
-          <Logger connections={this.state.connections}></Logger>
-        </Card>
+        {this.props.config.enableClientConnectionHistory ? (
+          <Card style={{ width: "95%", margin: "auto" }}>
+            <Logger connectionHistory={this.state.connectionHistory} />
+          </Card>
+        ) : (
+          <div />
+        )}
       </Container>
     );
   }
