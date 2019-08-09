@@ -1,9 +1,9 @@
 import React from "react";
 import io from "socket.io-client";
-import Channel from "./channel";
 import "bootstrap/dist/css/bootstrap.css";
 import { ReactComponent as ServerGreenIcon } from "../img/server_green.svg";
 import { Card, Container, ListGroup } from "react-bootstrap";
+import Channel from "./channel";
 import Logger from "./logger";
 
 export default class Server extends React.Component {
@@ -60,9 +60,13 @@ export default class Server extends React.Component {
             ))}
           </ListGroup>
         </Card>
-        <Card style={{ width: "95%", margin: "auto" }}>
-          <Logger connectionHistory={this.state.connectionHistory} />
-        </Card>
+        {this.props.config.enableClientConnectionHistory ? (
+          <Card style={{ width: "95%", margin: "auto" }}>
+            <Logger connectionHistory={this.state.connectionHistory} />
+          </Card>
+        ) : (
+          <div />
+        )}
       </Container>
     );
   }
