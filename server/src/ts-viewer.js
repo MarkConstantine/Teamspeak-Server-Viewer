@@ -32,7 +32,10 @@ class TsViewer extends EventEmitter {
     this._query.on("cliententerview", clientEnterInfo => {
       if (
         this._config.enableClientConnectionHistory &&
-        !this._isIgnoredUser(clientEnterInfo.client_nickname)
+        !this._isIgnoredUser(
+          this._config.ignoreUsersRegexList,
+          clientEnterInfo.client_nickname
+        )
       ) {
         const clientConnectionInfo = {
           clid: clientEnterInfo.clid,
@@ -189,7 +192,12 @@ class TsViewer extends EventEmitter {
     try {
       const res = await this._query.send("clientlist");
       for (let i = 0; i < res.clid.length; i++) {
-        if (this._isIgnoredUser(res.client_nickname[i])) {
+        if (
+          this._isIgnoredUser(
+            this._config.ignoreUsersRegexList,
+            res.client_nickname[i]
+          )
+        ) {
           continue;
         }
         onlineClients.push(
