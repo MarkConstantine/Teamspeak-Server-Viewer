@@ -174,11 +174,13 @@ class TsViewer extends EventEmitter {
 
     try {
       const res = await this._query.send("clientlist");
-      const serverQueryAdminRegex = new RegExp(".*serveradmin.*");
+      const serverAdminQueryUserRegex = new RegExp(".*serveradmin.*");
+      const tsIndexUserRegex = new RegExp(".*TS3index.*");
       for (let i = 0; i < res.clid.length; i++) {
         if (
           !this._config.displayServerQueryUsers &&
-          serverQueryAdminRegex.test(res.client_nickname[i])
+          serverAdminQueryUserRegex.test(res.client_nickname[i]) &&
+          tsIndexUserRegex.test(res.client_nickname[i])
         ) {
           continue;
         }
