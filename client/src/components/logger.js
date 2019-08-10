@@ -32,10 +32,11 @@ export default class Logger extends React.Component {
       <AutoSizer disableHeight>
         {({ width }) => (
           <List
+            style={{ fontSize: "12px" }}
             height={300}
             width={width}
             rowCount={this.props.connectionHistory.length}
-            rowHeight={22}
+            rowHeight={20}
             rowRenderer={this.rowRenderer.bind(this)}
           />
         )}
