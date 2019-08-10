@@ -87,7 +87,7 @@ class TsViewer extends EventEmitter {
 
       this._update();
     });
-    
+
     this._query.on("clientmoved", _ => this._update());
     this._query.on("channelcreated", _ => this._update());
     this._query.on("channeledited", _ => this._update());
@@ -179,8 +179,8 @@ class TsViewer extends EventEmitter {
       for (let i = 0; i < res.clid.length; i++) {
         if (
           !this._config.displayServerQueryUsers &&
-          serverAdminQueryUserRegex.test(res.client_nickname[i]) &&
-          tsIndexUserRegex.test(res.client_nickname[i])
+          (serverAdminQueryUserRegex.test(res.client_nickname[i]) ||
+            tsIndexUserRegex.test(res.client_nickname[i]))
         ) {
           continue;
         }
