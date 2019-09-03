@@ -5,6 +5,8 @@ class TsClient {
         this.clid = clid;
         this.client_nickname = client_nickname;
         this.cid = cid;
+        this.client_input_muted = false;
+        this.client_output_muted = false;
     }
 }
 

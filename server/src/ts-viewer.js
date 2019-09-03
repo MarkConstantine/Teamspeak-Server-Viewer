@@ -151,16 +151,27 @@ class TsViewer extends EventEmitter {
       this._getCurrentOnlineClients()
     ])
       .then(values => {
-        this._currentServer.update(
-          values[0].virtualserver_name,
-          values[1],
-          values[2]
-        );
+        const serverName = values[0].virtualserver_name;
+        const channelList = values[1];
+        const clientList = values[2];
+        this._currentServer.update(serverName, channelList, clientList);
+      })
+      .then(async _ => {
+        await this._getClientsInputOutputMuted(this._currentServer.clientList);
+        console.log("update");
         this.emit("update", this._currentServer);
       })
       .catch(err => {
         console.error("Could not update " + err);
       });
+  }
+
+  async _getClientsInputOutputMuted(clientList) {
+    for (let client of clientList) {
+      const res = await this._query.send("clientinfo", { clid: client.clid });
+      client.client_input_muted = res.client_input_muted === "1";
+      client.client_output_muted = res.client_output_muted === "1";
+    }
   }
 
   async _getCurrentChannels() {
