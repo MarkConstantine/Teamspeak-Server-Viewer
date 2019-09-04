@@ -14,6 +14,8 @@ export default class Channel extends React.Component {
             <Client
               key={client.clid}
               client_nickname={client.client_nickname}
+              client_input_muted={client.client_input_muted}
+              client_output_muted={client.client_output_muted}
             />
           ))}
         </ListGroup>
